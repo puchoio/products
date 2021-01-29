@@ -1,16 +1,26 @@
 package org.plumbum;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.MediaType;
 
-@Path("/hello-resteasy")
+import org.plumbum.rest.dto.Product;
+
+import io.quarkus.vertx.web.ReactiveRoutes;
+import io.quarkus.vertx.web.Route;
+import io.smallrye.mutiny.Multi;
+import io.vertx.core.http.HttpMethod;
+
+@ApplicationScoped
 public class ProductsResource {
 
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String hello() {
-        return "Hello RESTEasy";
-    }
+	@Route(path = "/products", methods = HttpMethod.GET, produces = MediaType.APPLICATION_JSON)
+	public Multi<Product> hello() throws InterruptedException {
+		return ReactiveRoutes.asJsonArray(
+				Multi.createFrom().items(createProduct(), createProduct(), createProduct(), createProduct()));
+	}
+
+	private Product createProduct() throws InterruptedException {
+		return new Product("1234", "putito");
+	}
+
 }
