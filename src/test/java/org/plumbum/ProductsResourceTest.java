@@ -1,17 +1,20 @@
 package org.plumbum;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.containsString;
 
-import io.quarkus.test.Mock;
-import io.quarkus.test.junit.mockito.InjectMock;
-import io.smallrye.mutiny.Multi;
-import java.util.ArrayList;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.response.Response;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.plumbum.rest.dto.Product;
+import org.plumbum.rest.dto.ProductDTO;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -20,16 +23,41 @@ import io.quarkus.test.junit.QuarkusTest;
 @QuarkusTest
 public class ProductsResourceTest {
 
-	@InjectMock
-	private ProductBusiness productBusiness;
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Test
-	public void testGetProducts() throws JsonProcessingException {
-		final Product product1 = new Product("1234", "putito");
-		Mockito.when(productBusiness.getProducts()).thenReturn(Multi.createFrom().item(product1));
+	public void testGetProducts() throws Exception {
+		given()
+			.when()
+				.get("/products")
+			.then()
+				.statusCode(200)
+			.body(
+					containsString("id"),
+					containsString("name"),
+					containsString("desc")
 
-		final List<Product> result = given().when().get("/products").then().statusCode(200).extract().body().jsonPath()
-				.getList(".", Product.class);
-		Assertions.assertEquals(product1, result.get(0));
+				);
+	}
+
+
+
+	public List<ProductDTO> map(Response response){
+		String values = response.asString();
+
+		return Arrays.stream(StringUtils.substringsBetween(values, "{", "}"))
+			.map(s -> "{"+ s + "}")
+			.collect(Collectors.toList())
+			.stream().map(this::getProductDTO)
+			.collect(Collectors.toList());
+	}
+
+	private ProductDTO getProductDTO(String s) {
+		try {
+			return mapper.readValue(s, ProductDTO.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

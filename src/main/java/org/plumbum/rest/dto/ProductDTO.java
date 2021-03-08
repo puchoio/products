@@ -1,13 +1,24 @@
 package org.plumbum.rest.dto;
 
-public class Product {
+
+import lombok.ToString;
+
+@ToString
+public class ProductDTO {
 	public String id;
 	public String name;
+	public String description;
 
-	public Product(String id, String name) {
+	public ProductDTO(){
+
+	}
+
+
+	public ProductDTO(String id, String name, String description) {
 		super();
 		this.id = id;
 		this.name = name;
+		this.description = description;
 	}
 
 	@Override
@@ -30,7 +41,7 @@ public class Product {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		Product other = (Product) obj;
+		ProductDTO other = (ProductDTO) obj;
 		if (id == null) {
 			if (other.id != null) {
 				return false;
