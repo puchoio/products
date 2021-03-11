@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: products
+  template:
+    metadata:
+      labels:
+        app: products
+
+    spec:
+      initContainers:
+        - name: check-service
+          image: busybox:latest
+          imagePullPolicy: IfNotPresent
+          command: [ 'sh', '-c', "until nc -zv mysql 3306; do echo waiting for db; sleep 2; done"  ]
+        - name: init-db
+          image: arey/mysql-client:latest
+          imagePullPolicy: IfNotPresent
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          workingDir: /home/mysql
+          command: ["/bin/sh",
+                    "-c",
+                    "mysql -h mysql -P 3306 --protocol=tcp -u root -ppassword < /home/mysql/schema.sql"]
+          volumeMounts:
+            - mountPath: /home/mysql
+              name: mysql-volume
+        - name: load-data-db
+          image: arey/mysql-client:latest
+          imagePullPolicy: IfNotPresent
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          workingDir: /home/mysql
+          command: [ "/bin/sh",
+                     "-c",
+                     "mysql -h mysql -P 3306 --protocol=tcp -u root -ppassword < /home/mysql/data.sql" ]
+          volumeMounts:
+             - mountPath: /home/mysql
+               name: mysql-volume
+      containers:
+        - name: products
+          image: quarkus/products:1.0.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: QUARKUS_DATASOURCE_REACTIVE_URL
+              value: vertx-reactive:mysql://mysql:3306/Product
+          ports:
+            - containerPort: 10000
+              protocol: TCP
+          resources:
+            limits:
+              memory: 500M
+            requests:
+              memory: 400M
+      volumes:
+        - name: mysql-volume
+          configMap:
+            name: mysql-configmap
