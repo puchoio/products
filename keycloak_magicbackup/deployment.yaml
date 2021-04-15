@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: keycloak
+  name: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - image: jboss/keycloak
+        name: keycloak
+        env:
+          - name: KEYCLOAK_USER
+            value: admin
+          - name: KEYCLOAK_PASSWORD
+            value: admin
+          - name: DB_VENDOR
+            value: mysql
+          - name: DB_ADDR
+            value: mysql-keycloak-service
+          - name: DB_PORT
+            value: "3306"
+          - name: DB_USER
+            value: keycloak
+          - name: DB_PASSWORD
+            value: keycloak
+        ports:
+          - containerPort: 8080
+            name: http
+

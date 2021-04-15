@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-keycloak
+  template:
+    metadata:
+      labels:
+        app: mysql-keycloak
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest
+          imagePullPolicy: Always
+          command: [ '/entrypoint.sh', '--default-authentication-plugin=mysql_native_password' ]
+          env:
+            - name: MYSQL_USER
+              value: keycloak
+            - name: MYSQL_PASSWORD
+              value: keycloak
+            - name: MYSQL_ROOT_PASSWORD
+              value: password
+            - name: MYSQL_DATABASE
+              value: keycloak
+          ports:
+            - containerPort: 3306
+              protocol: TCP
+          resources:
+            limits:
+              memory: 500M
+            requests:
+              memory: 400M

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: oauth2
+  name: oauth2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oauth2
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: oauth2
+    spec:
+      containers:
+      - image: quay.io/oauth2-proxy/oauth2-proxy
+        name: oauth2-proxy
+        env:
+          - name: OAUTH2_PROXY_EMAIL_DOMAINS
+            value: "*"
+          - name: OAUTH2_PROXY_PROVIDER
+            value: oidc
+          - name: OAUTH2_PROXY_OIDC_ISSUER_URL
+            value: http://10.101.92.8:10001/auth/realms/master
+          - name: OAUTH2_PROXY_CLIENT_ID
+            value: test
+          - name: OAUTH2_PROXY_CLIENT_SECRET
+            value: 31a0100c-47a1-49d1-a592-d22719c45d92
+          - name: OAUTH2_PROXY_LOGIN_URL
+            value: http://localhost:8080/auth/realms/master/protocol/openid-connect/auth
+          - name: OAUTH2_PROXY_REDEEM_URL
+            value: http://localhost:8080/auth/realms/master/protocol/openid-connect/token
+          - name: OAUTH2_PROXY_PROFILE_URL
+            value: http://localhost:8080/auth/realms/master/protocol/openid-connect/userinfo
+          - name: OAUTH2_PROXY_VALIDATE_URL
+            value: http://localhost:8080/auth/realms/master/protocol/openid-connect/userinfo
+          - name: OAUTH2_PROXY_UPSTREAM
+            value: http://10.100.81.183:8081
+          - name: OAUTH2_PROXY_COOKIE_SECRET
+            value: "1234567890123456"
+          - name: OAUTH2_PROXY_COOKIE_SECURE
+            value: "false"
+          - name: OAUTH2_PROXY_REDIRECT_URL
+            value: http://localhost:8080/auth/realms/master/protocol/openid-connect/auth
+
