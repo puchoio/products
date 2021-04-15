@@ -13,38 +13,38 @@ spec:
         app: products
 
     spec:
-    #  initContainers:
-    #    - name: check-service
-    #      image: busybox:latest
-    #      imagePullPolicy: IfNotPresent
-    #      command: [ 'sh', '-c', "until nc -zv mysql 3306; do echo waiting for db; sleep 2; done"  ]
-    #    - name: init-db
-    #      image: arey/mysql-client:latest
-    #      imagePullPolicy: IfNotPresent
-    #      terminationMessagePath: /dev/termination-log
-    #      terminationMessagePolicy: File
-    #      workingDir: /home/mysql
-    #      command: ["/bin/sh",
-    #                "-c",
-    #                "mysql -h mysql -P 3306 --protocol=tcp -u root -ppassword < /home/mysql/schema.sql"]
-    #      volumeMounts:
-    #        - mountPath: /home/mysql
-    #          name: mysql-volume
-    #    - name: load-data-db
-    #      image: arey/mysql-client:latest
-    #      imagePullPolicy: IfNotPresent
-    #      terminationMessagePath: /dev/termination-log
-    #      terminationMessagePolicy: File
-    #      workingDir: /home/mysql
-    #      command: [ "/bin/sh",
-    #                 "-c",
-    #                 "mysql -h mysql -P 3306 --protocol=tcp -u root -ppassword < /home/mysql/data.sql" ]
-    #      volumeMounts:
-    #         - mountPath: /home/mysql
-    #           name: mysql-volume
+      initContainers:
+        - name: check-service
+          image: busybox:latest
+          imagePullPolicy: IfNotPresent
+          command: [ 'sh', '-c', "until nc -zv mysql 3306; do echo waiting for db; sleep 2; done"  ]
+        - name: init-db
+          image: arey/mysql-client:latest
+          imagePullPolicy: IfNotPresent
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          workingDir: /home/mysql
+          command: ["/bin/sh",
+                    "-c",
+                    "mysql -h mysql -P 3306 --protocol=tcp -u root -ppassword < /home/mysql/schema.sql"]
+          volumeMounts:
+            - mountPath: /home/mysql
+              name: mysql-volume
+        - name: load-data-db
+          image: arey/mysql-client:latest
+          imagePullPolicy: IfNotPresent
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          workingDir: /home/mysql
+          command: [ "/bin/sh",
+                     "-c",
+                     "mysql -h mysql -P 3306 --protocol=tcp -u root -ppassword < /home/mysql/data.sql" ]
+          volumeMounts:
+             - mountPath: /home/mysql
+               name: mysql-volume
       containers:
         - name: products
-          image: localhost:5000/products:1.0.0
+          image: borja/products:1.0.1
           imagePullPolicy: IfNotPresent
           env:
             - name: QUARKUS_DATASOURCE_REACTIVE_URL
