@@ -28,7 +28,7 @@ spec:
           - name: OAUTH2_PROXY_CLIENT_ID
             value: test
           - name: OAUTH2_PROXY_CLIENT_SECRET
-            value: 31a0100c-47a1-49d1-a592-d22719c45d92
+            value: dab2e242-8bac-462e-a0ad-fa26ae8fcae8
           - name: OAUTH2_PROXY_LOGIN_URL
             value: http://localhost:8080/auth/realms/master/protocol/openid-connect/auth
           - name: OAUTH2_PROXY_REDEEM_URL
