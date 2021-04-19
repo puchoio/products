@@ -16,33 +16,38 @@ spec:
         app: oauth2
     spec:
       containers:
+      - name: nginx
+        image: nginx
       - image: quay.io/oauth2-proxy/oauth2-proxy
         name: oauth2-proxy
+        ports:
+          - containerPort: 4180
+            name: oauth-port
         env:
           - name: OAUTH2_PROXY_EMAIL_DOMAINS
             value: "*"
           - name: OAUTH2_PROXY_PROVIDER
-            value: oidc
-          - name: OAUTH2_PROXY_OIDC_ISSUER_URL
-            value: http://10.101.92.8:10001/auth/realms/master
+            value: keycloak
+          #- name: OAUTH2_PROXY_OIDC_ISSUER_URL
+          #  value: http://10.101.92.8:10001/auth/realms/master
           - name: OAUTH2_PROXY_CLIENT_ID
-            value: test
+            value: testClient
           - name: OAUTH2_PROXY_CLIENT_SECRET
-            value: dab2e242-8bac-462e-a0ad-fa26ae8fcae8
+            value: 919ab3dd-f655-4b3e-b9cb-5d3634569a0a
           - name: OAUTH2_PROXY_LOGIN_URL
-            value: http://localhost:8080/auth/realms/master/protocol/openid-connect/auth
+            value: http://localhost:80/auth/realms/master/protocol/openid-connect/auth
           - name: OAUTH2_PROXY_REDEEM_URL
-            value: http://localhost:8080/auth/realms/master/protocol/openid-connect/token
+            value: http://localhost:80/auth/realms/master/protocol/openid-connect/token
           - name: OAUTH2_PROXY_PROFILE_URL
-            value: http://localhost:8080/auth/realms/master/protocol/openid-connect/userinfo
+            value: hhttp://localhost:80/auth/realms/master/protocol/openid-connect/userinfo
           - name: OAUTH2_PROXY_VALIDATE_URL
-            value: http://localhost:8080/auth/realms/master/protocol/openid-connect/userinfo
+            value: http://localhost:80/auth/realms/master/protocol/openid-connect/userinfo
           - name: OAUTH2_PROXY_UPSTREAM
-            value: http://10.100.81.183:8081
+            value: http://mylocalhost:80/httpd
           - name: OAUTH2_PROXY_COOKIE_SECRET
             value: "1234567890123456"
           - name: OAUTH2_PROXY_COOKIE_SECURE
             value: "false"
           - name: OAUTH2_PROXY_REDIRECT_URL
-            value: http://localhost:8080/auth/realms/master/protocol/openid-connect/auth
+            value: http://mylocalhost/httpd
 

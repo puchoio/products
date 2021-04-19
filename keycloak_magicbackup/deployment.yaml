@@ -33,6 +33,8 @@ spec:
             value: keycloak
           - name: DB_PASSWORD
             value: keycloak
+          - name: PROXY_ADDRESS_FORWARDING
+            value: "true"
         ports:
           - containerPort: 8080
             name: http
